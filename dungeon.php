@@ -98,8 +98,17 @@
         enemyMovementHandler(enemy);
         
         if(game.input.keyboard.isDown(Phaser.Keyboard.S)&& heal != 0 && player.health != playerHPMax[level]){
-            player.health = playerHPMax[level];
+            if(player.health + (playerHPMax[level] / 2) >= playerHPMax[level]){
+				player.health = playerHPMax[level];
+			}else {
+				player.heal(playerHPMax[level] / 2);
+			}
+			//player.health = playerHPMax[level];
             heal--;
+			
+			battleDialogue.reset();
+            battleDialogue.lifespan = 1000;
+            battleDialogue.text = 'Healed!';
         }
         
         UIplayerEXP.text = 'EXP: '+playerEXP+'/'+expTable[level];
@@ -169,7 +178,7 @@
         UIlevelUp.text = "LEVEL UP! HP increased to "+playerHPMax[level]+" and attack increased to "+player.dmg+". \nYou're currently at level "+(level+1)+".";
     }
     
-    // A penalty when the player escapes with less than 0      EXP
+    // A penalty when the player escapes with less than 0 EXP
     function levelDown() {
         if(level != 0){
             level--;
@@ -199,7 +208,6 @@
 			},
 			success: function() {
 				console.log("Ajax request sent");
-				alert("Exp: "+playerEXP);
 			},
 			error: function() {
 				console.log("Ajax request failed");

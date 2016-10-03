@@ -1,3 +1,14 @@
+function tweenTint(object, startColor, endColor, time){
+    var colorBlend = {step: 0};
+    var colorTween = game.add.tween(colorBlend).to({step: 50}, time);
+    colorTween.onUpdateCallback(function() {
+        object.tint = Phaser.Color.interpolateColor(startColor, endColor, 50, colorBlend.step); 
+    });
+        
+    object.tint = startColor;
+    colorTween.start();
+}
+
 function startBattle(player, enemy) {
     if(enemy.alive){
         player.body.moves = false;
@@ -21,40 +32,87 @@ function startBattle(player, enemy) {
         // Player's turn
         if(game.time.now > nextTurn && playerTurn == 1 && command != 0){
             nextTurn = game.time.now + 1000;
-            
             if(command == 1){
-                tweenTint(enemy, 0xff0000, 0xFFFFFF, 500);
-                damageReceived = game.rnd.integerInRange(player.dmg, player.dmg + 2);
-                enemy.damage(playerDamage[level]);
-                battleDialogue.reset();
-                battleDialogue.lifespan = 1000;
-                battleDialogue.text = 'Enemy took '+player.dmg+' damage';
-            }else if(command == 2 && heal != 0 && player.health != playerHPMax[level]){
-                player.health = playerHPMax[level];
-                heal--;
-            }else if(command == 3){
-                enemy.alive = false;
-                verifyKill = 0;
+                if(game.rnd.integerInRange(0, 100) < 30){
+                    battleDialogue.reset();
+                    battleDialogue.lifespan = 1000;
+                    battleDialogue.text = 'You missed!';
+                }else {
+                    tweenTint(enemy, 0xff0000, 0xFFFFFF, 500);
+                    damageReceived = game.rnd.integerInRange(player.dmg, player.dmg + 2);
+                    enemy.damage(playerDamage[level]);
+                    battleDialogue.reset();
+                    battleDialogue.lifespan = 1000;
+                    battleDialogue.text = 'Enemy took '+player.dmg+' damage';
+                }
+                playerTurn = 0;
+            }else if(command == 2){
+                if(heal != 0 && player.health != playerHPMax[level]){
+                    if(player.health + (playerHPMax[level] / 2) >= playerHPMax[level]){
+						player.health = playerHPMax[level];
+					}else {
+						player.heal(playerHPMax[level] / 2);
+					}
+					
+					//player.health = playerHPMax[level];
+                    heal--;
+                    playerTurn = 0;
+					command = 0;
                     
-                battleDialogue.reset();
-                battleDialogue.lifespan = 1000;
-                battleDialogue.text = 'You escaped! Gained 0 EXP';
+                    battleDialogue.reset();
+                    battleDialogue.lifespan = 1000;
+                    battleDialogue.text = 'Healed!';
+                }else {
+                    battleDialogue.reset();
+                    battleDialogue.lifespan = 1000;
+                    battleDialogue.text = 'Health full!';
+                }
+                
+            }else if(command == 3){
+                if(game.rnd.integerInRange(0, 100) >= 20){
+                    enemy.alive = false;
+                    verifyKill = 0;
+                    
+                    gainedEXP =  game.rnd.integerInRange(enemy.exp / 1.5, (enemy.exp + 15) / 1.5);
+                    
+					// Lose EXP for Fleeing
+                    playerEXP -= gainedEXP;
+                    battleDialogue.reset();
+                    battleDialogue.lifespan = 2000;
+                    battleDialogue.text = 'You escaped! Lost '+gainedEXP+' EXP';
+                    
+                    // Level down if EXP reached less than 0
+					if(playerEXP < 0){
+                        levelDown();
+                    }
+                }else {
+                    battleDialogue.reset();
+                    battleDialogue.lifespan = 1000;
+                    battleDialogue.text = 'Failed to escape!';
+                }
+                playerTurn = 0;
             }
-            playerTurn = 0;
             command = 0;
         }
             
         // Enemy's turn
         if(game.time.now > nextTurn && playerTurn == 0){
             nextTurn = game.time.now + 1000;
-            damageReceived = game.rnd.integerInRange(enemy.dmg, enemy.dmg + 1);
-            player.damage(damageReceived);
+            if(game.rnd.integerInRange(0, 100) >= 20){
+                game.camera.shake(0.006, 200);
+                damageReceived = game.rnd.integerInRange(enemy.dmg, enemy.dmg + 1);
+                player.damage(damageReceived);
+                
+                battleDialogue.reset();
+                battleDialogue.lifespan = 1000;
+                battleDialogue.text = 'You received '+damageReceived+' damage';
+            }else {
+                battleDialogue.reset();
+                battleDialogue.lifespan = 1000;
+                battleDialogue.text = "Enemy attack missed!";
+            }
             playerTurn = 1;
             command = 0;
-                
-            battleDialogue.reset();
-            battleDialogue.lifespan = 1000;
-            battleDialogue.text = 'You received '+damageReceived+' damage';
         }
     }
         
@@ -63,7 +121,6 @@ function startBattle(player, enemy) {
     }
         
     if(!enemy.alive){
-        enemy.kill();
         atkBtn.visible = false;
         fleeBtn.visible = false;
         UIAtkBtn.visible = false;
@@ -77,8 +134,8 @@ function startBattle(player, enemy) {
         nextTurn = 0;
             
         if(verifyKill != 0){
-            gainedEXP =  game.rnd.integerInRange(enemy.exp, enemy.exp + 15);
             if(level < 9){
+                gainedEXP =  game.rnd.integerInRange(enemy.exp, enemy.exp + 15);
                 playerEXP += gainedEXP;
                 
                 battleDialogue.reset();
@@ -88,7 +145,8 @@ function startBattle(player, enemy) {
                 battleDialogue.reset();
                 battleDialogue.lifespan = 100000;
                 battleDialogue.text = 'You reached the level cap! Gained 0 EXP';
-            }            
+            }
+			saveGame();
         }
         
         if(playerEXP >= expTable[level]){

@@ -4,6 +4,7 @@ function generateUI() {
 battleDialogue = game.add.text(0, 0, 'Hello', style);
 
 // Level, HP, and EXP text
+UIUsername = game.add.text(0, 0, username, style);
 UILevel = game.add.text(0, 0, '', style);
 UIplayerHP = game.add.text(0, 0, 'HP: '+playerHP+'/'+playerHPMax[level], style);
 UIplayerEXP = game.add.text(0, 0, 'EXP: '+playerEXP+'/'+expTable[level], style);
@@ -15,20 +16,12 @@ healBtn = game.add.sprite(0, 0, 'buttonHeal');
 fleeBtn = game.add.sprite(0, 0, 'buttonFlee');
         
 // Attack, Heal, and Flee button text
-UIAtkBtn = game.add.text(0, 0, 'A: Attack', {
-    font: '20px Arial', 
-    fill: '#ffffff'
-});
-UIHealBtn = game.add.text(0, 0, 'S: Heal - '+heal, {
-    font: '20px Arial', 
-    fill: '#ffffff'
-});
-UIFleeBtn = game.add.text(0, 0, 'D: Flee', {
-    font: '20px Arial', 
-    fill: '#ffffff'
-});
+UIAtkBtn = game.add.text(0, 0, 'A: Attack', buttonStyle);
+UIHealBtn = game.add.text(0, 0, 'S: Heal - '+heal, buttonStyle);
+UIFleeBtn = game.add.text(0, 0, 'D: Flee', buttonStyle);
         
 // Locking the UI to the camera
+UIUsername.fixedToCamera = true;
 UILevel.fixedToCamera = true;
 UIplayerHP.fixedToCamera = true;
 UIplayerEXP.fixedToCamera = true;
@@ -46,10 +39,11 @@ UIHealBtn.fixedToCamera = true;
 UIFleeBtn.fixedToCamera = true;
         
 // Positioning the UI
-UILevel.cameraOffset.setTo(30, 33);
-UIplayerHP.cameraOffset.setTo(30, 62);
-UIplayerEXP.cameraOffset.setTo(30, 91);
-UIlevelUp.cameraOffset.setTo(200, 50);
+UIUsername.cameraOffset.setTo(30, 33);
+UILevel.cameraOffset.setTo(30, 61);
+UIplayerHP.cameraOffset.setTo(30, 90);
+UIplayerEXP.cameraOffset.setTo(660, 33);
+UIlevelUp.cameraOffset.setTo(150, 33);
 battleDialogue.cameraOffset.setTo(30, 450);
 battleDialogue.visible = false;
 UIlevelUp.visible = false;
