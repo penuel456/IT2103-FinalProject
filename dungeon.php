@@ -1,10 +1,8 @@
 <?php
-	include("sql_connector.php");
-
-	$result = mysqli_query($db, "SELECT * FROM user WHERE id=".$_POST['id']);
-
-	$data = mysqli_fetch_row($result);
-	
+	session_start();
+ 	if(!isset($_SESSION['username'])){
+ 		header("location:index.php");
+ 	}
 ?>
 
 <!DOCTYPE html>
@@ -22,8 +20,8 @@
 	<title>It's Slimy</title>
 	<style>
 		body {
-			/*margin-left: 25%;
-			margin-top: 12%; */
+			margin-left: 20%;
+			/*margin-top: 12%; */
 			background-color: #2f283a;
 		}
 	</style>
@@ -35,10 +33,10 @@
 	// Creates a new game. Think of it as a main function.
 	var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update, render: render});
 	
-	
-	// 1: username, 2:pwd, 3:level, 4:currentEXP 
-	var playerEXP = <?php echo $data[4]; ?>;
-	var level = <?php echo $data[3]; ?>;
+	var userID = <?php echo $_SESSION['id']; ?>;
+	var username = "<?php echo $_SESSION['username']; ?>";
+	var playerEXP = <?php echo $_SESSION['exp']; ?>;
+	var level = <?php echo $_SESSION['level']; ?>;
     
     function create(){		
 		// Load CSV map. Pixel size is 16x16
@@ -191,9 +189,21 @@
 	
 	function saveGame() {
 		// Ajax request
-		$.post('saveGame.php', {
-			level: level,
-			exp: playerEXP
+		$.ajax({
+			type: "post",
+			url: "saveGame.php",
+			data: {
+				id: userID,
+				level: level,
+				exp: playerEXP
+			},
+			success: function() {
+				console.log("Ajax request sent");
+				alert("Exp: "+playerEXP);
+			},
+			error: function() {
+				console.log("Ajax request failed");
+			}
 		});
 	}
 
