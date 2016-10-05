@@ -1,10 +1,10 @@
 var style = { 
-            font: "20px Segoe UI", 
+            font: "19px Consolas", 
             fill: '#ffffff', 
             backgroundColor: 'rgba(153, 204, 255,0.50)'
             };
 var buttonStyle = {
-    		font: '20px Arial', 
+    		font: '20px Segoe UI', 
     		fill: '#ffffff'
 			};
 
@@ -32,6 +32,7 @@ var healKey;
 var atkBtn; 
 var healBtn;
 var fleeBtn;
+var logoutBtn;
 
 // Text inside the button
 var UIAtkBtn;

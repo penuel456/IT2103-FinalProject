@@ -33,7 +33,7 @@ function startBattle(player, enemy) {
         if(game.time.now > nextTurn && playerTurn == 1 && command != 0){
             nextTurn = game.time.now + 1000;
             if(command == 1){
-                if(game.rnd.integerInRange(0, 100) < 30){
+                if(game.rnd.integerInRange(0, 100) < 10){
                     battleDialogue.reset();
                     battleDialogue.lifespan = 1000;
                     battleDialogue.text = 'You missed!';
@@ -71,6 +71,7 @@ function startBattle(player, enemy) {
             }else if(command == 3){
                 if(game.rnd.integerInRange(0, 100) >= 20){
                     enemy.alive = false;
+					enemy.kill();
                     verifyKill = 0;
                     
                     gainedEXP =  game.rnd.integerInRange(enemy.exp / 1.5, (enemy.exp + 15) / 1.5);
@@ -158,9 +159,23 @@ function startBattle(player, enemy) {
         player.alive = false;
         player.health = 0;
         player.kill();
-            
+		
+		gainedEXP =  game.rnd.integerInRange(enemy.exp / 1.2, (enemy.exp + 15) / 1.2);
+                    
+		// Lose EXP for Dying
+        playerEXP -= gainedEXP;
+		if(playerEXP < 0){
+			levelDown();
+		}
+		saveGame();
+        game.paused = true;    
         battleDialogue.reset();
-        battleDialogue.lifespan = 100000;
-        battleDialogue.text = 'YOU DIED! Refresh page to try again.';
+        battleDialogue.lifespan = 2000;
+        battleDialogue.text = "YOU DIED! Logging you out in 3 seconds...";
+		
+		setTimeout(function() {
+			window.location.replace("logout.php");
+		}, 3000);
+		
     }
 }

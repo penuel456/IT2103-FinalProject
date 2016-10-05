@@ -17,11 +17,10 @@
     <script type='text/javascript' src='js/battleState.js'></script>
 	<script type="text/javascript" src='js/jquery.min.js'></script>
     
-	<title>It's Slimy</title>
+	<title>It's Slimy | Game</title>
 	<style>
 		body {
 			margin-left: 20%;
-			/*margin-top: 12%; */
 			background-color: #2f283a;
 		}
 	</style>
@@ -119,16 +118,16 @@
     
     function playerMovementHandler() {
         if(cursors.left.isDown){
-        	player.body.velocity.x = -300;
+        	player.body.velocity.x = -200;
         	player.play('left');
        	}else if(cursors.right.isDown){
-        	player.body.velocity.x = 300;
+        	player.body.velocity.x = 200;
         	player.play('right');
         }else if(cursors.up.isDown){
-        	player.body.velocity.y = -300;
+        	player.body.velocity.y = -200;
         	player.play('left');
    		}else if(cursors.down.isDown){
-        	player.body.velocity.y = 300;
+        	player.body.velocity.y = 200;
         	player.play('right');
     	}else {
     		player.animations.stop();
@@ -182,7 +181,7 @@
     function levelDown() {
         if(level != 0){
             level--;
-            playerEXP = expTable[level] / 1.2;
+            playerEXP = expTable[level] / 2;
             
             // Decreasing parameters
             player.maxHealth = playerHPMax[level];
@@ -213,6 +212,10 @@
 				console.log("Ajax request failed");
 			}
 		});
+	}
+	
+	function logout() {
+		window.location.replace("logout.php");
 	}
 
 </script>
