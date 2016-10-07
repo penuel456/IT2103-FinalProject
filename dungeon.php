@@ -36,6 +36,7 @@
 	var username = "<?php echo $_SESSION['username']; ?>";
 	var playerEXP = <?php echo $_SESSION['exp']; ?>;
 	var level = <?php echo $_SESSION['level']; ?>;
+	var playerSP = playerSPMax[level];
     
     function create(){		
 		// Load CSV map. Pixel size is 16x16
@@ -72,6 +73,9 @@
         
         // Attack keyboard press
         atkKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
+		
+		// SP Attack keyboard press
+		spAtkKey = game.input.keyboard.addKey(Phaser.Keyboard.Q);
         
         // Heal keyboard press
         healKey =  game.input.keyboard.addKey(Phaser.Keyboard.S);
@@ -114,6 +118,7 @@
         UIplayerHP.text = 'HP: '+player.health+'/'+player.maxHealth;
         UIHealBtn.text = "S: Heal - "+heal;
         UILevel.text = 'Level: '+(level+1);
+		UIplayerSP.text = 'SP: '+playerSP+'/'+playerSPMax[level];
 	}
     
     function playerMovementHandler() {
@@ -187,6 +192,7 @@
             player.maxHealth = playerHPMax[level];
             player.health = playerHPMax[level];
             player.dmg = playerDamage[level];
+			playerSP = playerSPMax[level];
         }
     }
     

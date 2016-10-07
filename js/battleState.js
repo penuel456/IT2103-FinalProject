@@ -17,8 +17,10 @@ function startBattle(player, enemy) {
         }
             
         atkBtn.visible = true;
+		spAtkBtn.visible = true;
         fleeBtn.visible = true;
         UIAtkBtn.visible = true;
+		UISpAtkBtn.visible = true;
         UIFleeBtn.visible = true;
             
         if(atkKey.isDown){
@@ -27,13 +29,15 @@ function startBattle(player, enemy) {
             command = 2;
         }else if(fleeKey.isDown){
             command = 3;
-        }
+        }else if(spAtkKey.isDown){
+			command = 4;
+		}
             
         // Player's turn
         if(game.time.now > nextTurn && playerTurn == 1 && command != 0){
             nextTurn = game.time.now + 1000;
             if(command == 1){
-                if(game.rnd.integerInRange(0, 100) < 10){
+                if(game.rnd.integerInRange(0, 100) < 20){
                     battleDialogue.reset();
                     battleDialogue.lifespan = 1000;
                     battleDialogue.text = 'You missed!';
@@ -92,9 +96,31 @@ function startBattle(player, enemy) {
                     battleDialogue.text = 'Failed to escape!';
                 }
                 playerTurn = 0;
-            }
+            }else if(command == 4){
+				if(playerSP >= 2){
+					if(game.rnd.integerInRange(0, 100) < 40){
+                    	battleDialogue.reset();
+                    	battleDialogue.lifespan = 1000;
+                    	battleDialogue.text = 'You missed!';
+                	}else {
+                    	tweenTint(enemy, 0xff0000, 0xFFFFFF, 500);
+                    	damageReceived = game.rnd.integerInRange(player.dmg, player.dmg + 2) * 2;
+                    	enemy.damage(damageReceived);
+                    	battleDialogue.reset();
+                    	battleDialogue.lifespan = 1000;
+                    	battleDialogue.text = 'Great hit! Enemy took '+damageReceived+' damage.';
+                	}
+					playerSP -= 2;
+					playerTurn = 0;
+				}else {
+					battleDialogue.reset();
+                    battleDialogue.lifespan = 1000;
+                    battleDialogue.text = 'You need more SP!';
+				}	
+			}
+		}
             command = 0;
-        }
+       
             
         // Enemy's turn
         if(game.time.now > nextTurn && playerTurn == 0){
@@ -123,8 +149,10 @@ function startBattle(player, enemy) {
         
     if(!enemy.alive){
         atkBtn.visible = false;
+		spAtkBtn.visible = false;
         fleeBtn.visible = false;
         UIAtkBtn.visible = false;
+		UISpAtkBtn.visible = false;
         UIFleeBtn.visible = false;
             
         player.body.moves = true;
